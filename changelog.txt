@@ -1,3 +1,7 @@
+Version 0.2.5
+- Important! due to recent undocumented changes in the Google Docs API, the plugin may have begun to fail to play video (only display a list of videos).  This has been updated with the following change.
+- updated for a google drive change on or about 2014/02 where the video download and streaming now uses the 'wise' service instead of 'writely'
+- if your google drive account has not been updated to the new UI (that is, the change from writely to wise hasn't kicked in), you can enable the old behaviour of using writely for downloading and streaming by setting "Force old writely service for plackback" to ON/TRUE in settings
 Version 0.2.2
 - updated xbmc.python from 1.0 to 2.1.0 for XBMC 13
 Version 0.2.1
