@@ -192,6 +192,7 @@ class gdrive:
 
         url = 'https://docs.google.com/feeds/default/private/full?showfolders=true'
 
+
         videos = {}
         while True:
             log('url = %s header = %s' % (url, header)) 
@@ -217,8 +218,16 @@ class gdrive:
             response_data = response.read()
 
             log('checking video list in gdrive') 
+#            log('response %s' % response_data) 
 
             for r in re.finditer('<title>([^<]+)</title><content type=\'video/[^\']+\' src=\'([^\']+)\'' ,
+                             response_data, re.DOTALL):
+                title,url = r.groups()
+                log('found video %s %s' % (title, url)) 
+                videos[title] = url
+
+            #for playing video.google.com videos linked to your google drive account
+            for r in re.finditer('<title>([^<]+)</title><link rel=\'alternate\' type=\'text/html\' href=\'([^\']+)' ,
                              response_data, re.DOTALL):
                 title,url = r.groups()
                 log('found video %s %s' % (title, url)) 
@@ -273,11 +282,18 @@ class gdrive:
             response_data = response.read()
 
             log('checking video list in gdrive') 
+#            log('response %s' % response_data) 
 
             for r in re.finditer('<title>([^<]+)</title><content type=\'video/[^\']+\' src=\'([^\']+)\'' ,
                              response_data, re.DOTALL):
                 title,url = r.groups()
                 log('found video %s %s' % (title, url)) 
+                videos[title] = 'plugin://plugin.video.gdrive?mode=streamVideo&title=' + title
+
+            #for playing video.google.com videos linked to your google drive account
+            for r in re.finditer('<title>([^<]+)</title><link rel=\'alternate\' type=\'text/html\' href=\'([^\']+)' ,
+                             response_data, re.DOTALL):
+                title,url = r.groups()
                 videos[title] = 'plugin://plugin.video.gdrive?mode=streamVideo&title=' + title
 
             nextURL = ''
@@ -308,7 +324,7 @@ class gdrive:
 
         log('url = %s header = %s' % (url, header)) 
         req = urllib2.Request(url, None, header)
-
+#        log('response %s' % response_data) 
         log('loading ' + url) 
         try:
             response = urllib2.urlopen(req)
@@ -354,7 +370,7 @@ class gdrive:
 
         log('url = %s header = %s' % (url, header)) 
         req = urllib2.Request(url, None, header)
-
+        #log('response %s' % response_data) 
         log('loading ' + url) 
         try:
             response = urllib2.urlopen(req)

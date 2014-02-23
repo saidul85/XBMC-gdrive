@@ -62,7 +62,8 @@ I've tested the add-on with several Google Drive accounts, including one with ov
  
 Current Version:
 
-
+0.2.6
+- Plays video.google.com videos that are linked in your google drive account
 0.2.5
 - Important! due to recent undocumented changes in the Google Docs API, the plugin may have begun to fail to play video (only display a list of videos).  This has been updated with the following change.
 - updated for a google drive change on or about 2014/02 where the video download and streaming now uses the 'wise' service instead of 'writely'
