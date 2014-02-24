@@ -1,3 +1,4 @@
+- add thumbnail previews
 Version 0.2.7
 - added streamURL parameter: mode=streamURL
 - playback a specific Google Drive Video URL (format: https://docs.google.com/file/d/#####/preview) via stream (automatically transcoded by Google Drive playback services)

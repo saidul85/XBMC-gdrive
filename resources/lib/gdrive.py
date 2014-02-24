@@ -171,6 +171,7 @@ class gdrive:
               return
 
         response_data = response.read()
+        log('response %s' % response_data) 
 
         nextURL = ''
         for r in re.finditer('<link rel=\'(next)\'' ,
@@ -220,18 +221,19 @@ class gdrive:
             log('checking video list in gdrive') 
 #            log('response %s' % response_data) 
 
-            for r in re.finditer('<title>([^<]+)</title><content type=\'video/[^\']+\' src=\'([^\']+)\'' ,
+            for r in re.finditer('<title>([^<]+)</title><content type=\'video/[^\']+\' src=\'([^\']+)\'.+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
                              response_data, re.DOTALL):
-                title,url = r.groups()
+                title,url,thumbnail = r.groups()
                 log('found video %s %s' % (title, url)) 
-                videos[title] = url
+                videos[title] = {'url': url, 'thumbnail' : thumbnail}
 
             #for playing video.google.com videos linked to your google drive account
-            for r in re.finditer('<title>([^<]+)</title><link rel=\'alternate\' type=\'text/html\' href=\'([^\']+)' ,
+            for r in re.finditer('<title>([^<]+)</title><link rel=\'alternate\' type=\'text/html\' href=\'([^\']+).+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
                              response_data, re.DOTALL):
-                title,url = r.groups()
+                title,url,thumbnail = r.groups()
                 log('found video %s %s' % (title, url)) 
-                videos[title] = url
+                videos[title] = {'url': url, 'thumbnail' : thumbnail}
+
 
             nextURL = ''
             for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
@@ -284,17 +286,19 @@ class gdrive:
             log('checking video list in gdrive') 
 #            log('response %s' % response_data) 
 
-            for r in re.finditer('<title>([^<]+)</title><content type=\'video/[^\']+\' src=\'([^\']+)\'' ,
+            for r in re.finditer('<title>([^<]+)</title><content type=\'video/[^\']+\' src=\'([^\']+)\'.+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
                              response_data, re.DOTALL):
-                title,url = r.groups()
+                title,url,thumbnail = r.groups()
                 log('found video %s %s' % (title, url)) 
-                videos[title] = 'plugin://plugin.video.gdrive?mode=streamVideo&title=' + title
+                videos[title] = {'url': 'plugin://plugin.video.gdrive?mode=streamVideo&title=' + title, 'thumbnail' : thumbnail}
+
 
             #for playing video.google.com videos linked to your google drive account
-            for r in re.finditer('<title>([^<]+)</title><link rel=\'alternate\' type=\'text/html\' href=\'([^\']+)' ,
+            for r in re.finditer('<title>([^<]+)</title><link rel=\'alternate\' type=\'text/html\' href=\'([^\']+).+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
                              response_data, re.DOTALL):
-                title,url = r.groups()
-                videos[title] = 'plugin://plugin.video.gdrive?mode=streamVideo&title=' + title
+                title,url,thumbnail = r.groups()
+                videos[title] = {'url': 'plugin://plugin.video.gdrive?mode=streamVideo&title=' + title, 'thumbnail' : thumbnail}
+
 
             nextURL = ''
             for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
