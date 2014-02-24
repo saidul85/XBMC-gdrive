@@ -185,6 +185,14 @@ elif mode == 'streamVideo':
     log('play url: ' + videoURL)
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item) 
 
+elif mode == 'streamurl' or mode == 'streamURL':
+    url = plugin_queries['url']
+    log('play url: ' + url)
+    videoURL = gdrive.getPlayerLinkURL(url)
+    item = xbmcgui.ListItem(path=videoURL)
+    log('play url: ' + videoURL)
+    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item) 
+
 
 #clear the authorization token
 elif mode == 'clearauth':
