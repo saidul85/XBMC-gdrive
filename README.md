@@ -45,6 +45,12 @@ Modes:
 - bypasses Playback Type in Settings
 - create .strm or .m3u files containing the following: plugin://plugin.video.gdrive?mode=streamVideo&amp;title=Title_of_video
 - if your video is composed of multiple clips, you can create a .m3u that makes the above plugin:// call, one line for each clip.  You can then create a .strm file that points to the .m3u.  XBMC can index movies and shows contained in your Google Drive account by either a .strm containing a single plugin:// call to the video, or a .strm that points to a local .m3u file that contains a list of plugin:// calls representing the video
+5) mode=streamURL
+- playback a specific Google Drive Video URL (format: https://docs.google.com/file/d/#####/preview) via stream (automatically transcoded by Google Drive playback services)
+- handy for playback of publicly shared videos stored in Google Drive
+- bypasses Playback Type in Settings
+- create .strm or .m3u files containing the following: plugin://plugin.video.gdrive?mode=streamURL&amp;url=https://docs.google.com/file/d/#####/preview
+- if your video is composed of multiple clips, you can create a .m3u that makes the above plugin:// call, one line for each clip.  You can then create a .strm file that points to the .m3u.  XBMC can index movies and shows contained in your Google Drive account by either a .strm containing a single plugin:// call to the video, or a .strm that points to a local .m3u file that contains a list of plugin:// calls representing the video
 
 FAQ:
 
@@ -62,7 +68,16 @@ I've tested the add-on with several Google Drive accounts, including one with ov
  
 Current Version:
 
+0.2.7
+- added streamURL parameter: mode=streamURL
+- playback a specific Google Drive Video URL (format: https://docs.google.com/file/d/#####/preview) via stream (automatically transcoded by Google Drive playback services)
+- handy for playback of publicly shared videos stored in Google Drive
+- bypasses Playback Type in Settings
+- create .strm or .m3u files containing the following: plugin://plugin.video.gdrive?mode=streamURL&amp;url=https://docs.google.com/file/d/#####/preview
+- if your video is composed of multiple clips, you can create a .m3u that makes the above plugin:// call, one line for each clip.  You can then create a .strm file that points to the .m3u.  XBMC can index movies and shows contained in your Google Drive account by either a .strm containing a single plugin:// call to the video, or a .strm that points to a local .m3u file that contains a list of plugin:// calls representing the video
 
+0.2.6
+- Plays video.google.com videos that are linked in your google drive account
 0.2.5
 - Important! due to recent undocumented changes in the Google Docs API, the plugin may have begun to fail to play video (only display a list of videos).  This has been updated with the following change.
 - updated for a google drive change on or about 2014/02 where the video download and streaming now uses the 'wise' service instead of 'writely'
