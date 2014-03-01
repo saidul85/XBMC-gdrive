@@ -35,7 +35,7 @@ def log(msg, err=False):
 class gdrive:
 
 
-    def __init__(self, user, password, auth_writely, auth_wise, user_agent):
+    def __init__(self, user, password, auth_writely, auth_wise, user_agent, authenticate=True):
         self.user = user
         self.password = password
         self.writely = auth_writely
@@ -47,9 +47,12 @@ class gdrive:
           log('using token')
 
           return
-        log('logging in gdrive') 
-        self.login();
-        self.loginWISE();
+
+        # allow for playback of public videos without authentication
+        if (authenticate == True):
+          log('logging in gdrive') 
+          self.login();
+          self.loginWISE();
 
         return
 
@@ -374,7 +377,7 @@ class gdrive:
 
         log('url = %s header = %s' % (url, header)) 
         req = urllib2.Request(url, None, header)
-        #log('response %s' % response_data) 
+
         log('loading ' + url) 
         try:
             response = urllib2.urlopen(req)
@@ -393,7 +396,7 @@ class gdrive:
               return
 
         response_data = response.read()
-
+#        log('response %s' % response_data) 
         log('checking search result') 
 
         for r in re.finditer('<title>([^<]+)</title><content type=\'video/[^\']+\' src=\'([^\']+)\'' ,
@@ -536,12 +539,12 @@ class gdrive:
         return videoURL1 
 
 
+    # for playing public URLs
     def getPlayerLinkURL(self,url):
         log('fetching player link') 
 
-        #effective 2014/02, video stream calls require a wise token instead of writely token
-        self.loginWISE()
-        header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.wise, 'GData-Version' : '3.0' }
+        #try to use no authorization token (for pubic URLs)
+        header = { 'User-Agent' : self.user_agent, 'GData-Version' : '3.0' }
 
 
         log('url = %s header = %s' % (url, header)) 
@@ -573,23 +576,24 @@ class gdrive:
 
 #        for r in re.finditer('[^\=]+https%3A%2F%2F(.*)url\%3Dhttps\%253A\%252(.*)url\%3Dhttps\%253A\%252' ,
 
-        for r in re.finditer('"(fmt_stream_map)":"([^\"]+)"' ,
-                             response_data, re.DOTALL):
-            (urlType, urls) = r.groups()
-
-        urls = re.sub('\\\\u003d', '=', urls)
-        urls = re.sub('\\\\u0026', '&', urls)
 
 
         serviceRequired = ''
         for r in re.finditer('ServiceLogin\?(service)=([^\&]+)\&' ,
-                             urls, re.DOTALL):
+                             response_data, re.DOTALL):
+            (service, serviceRequired) = r.groups()
+
+        for r in re.finditer('AccountChooser.+?(service)=([^\']+)\'' ,
+                             response_data, re.DOTALL):
             (service, serviceRequired) = r.groups()
 
 
         #effective 2014/02, video stream calls require a wise token instead of writely token
         #backward support for account not migrated to the 2014/02 change
         if serviceRequired == 'writely':
+
+          if (self.writely == ''):
+            self.login();
 
           header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.writely, 'GData-Version' : '3.0' }
 
@@ -637,8 +641,67 @@ class gdrive:
           if serviceRequired != '':
             log('an unexpected service token is required: %s' % (serviceRequired), True)
 
+        elif serviceRequired == 'wise':
+
+          if (self.wise == ''):
+            self.loginWISE();
+
+          header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.wise, 'GData-Version' : '3.0' }
+
+          log('url = %s header = %s' % (url, header)) 
+          req = urllib2.Request(url, None, header)
+
+          log('loading ' + url) 
+          try:
+              response = urllib2.urlopen(req)
+          except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+#                self.login()
+                header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.wise, 'GData-Version' : '3.0' }
+                req = urllib2.Request(url, None, header)
+                try:
+                  response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                  log(str(e), True)
+                  return
+              else:
+                log(str(e), True)
+                return
+
+          response_data = response.read()
+
+          log('response %s' % response_data) 
+          log('info %s' % str(response.info())) 
+          log('checking search result') 
+
+       
+          for r in re.finditer('"(fmt_stream_map)":"([^\"]+)"' ,
+                             response_data, re.DOTALL):
+              (urlType, urls) = r.groups()
+
+          urls = re.sub('\\\\u003d', '=', urls)
+          urls = re.sub('\\\\u0026', '&', urls)
+
+
+          serviceRequired = ''
+          for r in re.finditer('ServiceLogin\?(service)=([^\&]+)\&' ,
+                               urls, re.DOTALL):
+              (service, serviceRequired) = r.groups()
+
+
+          if serviceRequired != '':
+            log('an unexpected service token is required: %s' % (serviceRequired), True)
+
+
         elif serviceRequired != '':
           log('an unexpected service token is required: %s' % (serviceRequired), True)
+
+        for r in re.finditer('"(fmt_stream_map)":"([^\"]+)"' ,
+                             response_data, re.DOTALL):
+            (urlType, urls) = r.groups()
+
+        urls = re.sub('\\\\u003d', '=', urls)
+        urls = re.sub('\\\\u0026', '&', urls)
 
 
         log('urls --- %s ' % urls) 

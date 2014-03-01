@@ -1,3 +1,4 @@
+- don't login or provide authorization token for public videos (unless denied access)
 - add thumbnail previews
 Version 0.2.7
 - added streamURL parameter: mode=streamURL
