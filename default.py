@@ -16,7 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-from resources.lib import gdrive 
+from resources.lib import gdrive
 import sys
 import urllib
 import cgi
@@ -25,12 +25,11 @@ import re
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 
 
-        
 def log(msg, err=False):
     if err:
-        xbmc.log(addon.getAddonInfo('name') + ': ' + msg.encode('utf-8'), xbmc.LOGERROR)    
+        xbmc.log(addon.getAddonInfo('name') + ': ' + msg.encode('utf-8'), xbmc.LOGERROR)
     else:
-        xbmc.log(addon.getAddonInfo('name') + ': ' + msg.encode('utf-8'), xbmc.LOGDEBUG)    
+        xbmc.log(addon.getAddonInfo('name') + ': ' + msg.encode('utf-8'), xbmc.LOGDEBUG)
 
 def parse_query(query):
     queries = cgi.parse_qs(query)
@@ -40,18 +39,18 @@ def parse_query(query):
     q['mode'] = q.get('mode', 'main')
     return q
 
-def addVideo(url, infolabels, img='', fanart='', total_items=0, 
+def addVideo(url, infolabels, img='', fanart='', total_items=0,
                    cm=[], cm_replace=False):
     infolabels = decode_dict(infolabels)
     log('adding video: %s - %s' % (infolabels['title'].decode('utf-8','ignore'), url))
-    listitem = xbmcgui.ListItem(infolabels['title'], iconImage=img, 
+    listitem = xbmcgui.ListItem(infolabels['title'], iconImage=img,
                                 thumbnailImage=img)
     listitem.setInfo('video', infolabels)
     listitem.setProperty('IsPlayable', 'true')
     listitem.setProperty('fanart_image', fanart)
     if cm:
         listitem.addContextMenuItems(cm, cm_replace)
-    xbmcplugin.addDirectoryItem(plugin_handle, url, listitem, 
+    xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
                                 isFolder=False, totalItems=total_items)
 
 
@@ -80,6 +79,25 @@ plugin_queries = parse_query(sys.argv[2][1:])
 
 addon = xbmcaddon.Addon(id='plugin.video.gdrive')
 #plugin_path = addon.getAddonInfo('path')
+
+try:
+
+    remote_debugger = addon.getSetting('remote_debugger')
+    remote_debugger_host = addon.getSetting('remote_debugger_host')
+
+    # append pydev remote debugger
+    if remote_debugger == 'true':
+        # Make pydev debugger works for auto reload.
+        # Note pydevd module need to be copied in XBMC\system\python\Lib\pysrc
+        import pysrc.pydevd as pydevd
+        # stdoutToServer and stderrToServer redirect stdout and stderr to eclipse console
+        pydevd.settrace(remote_debugger_host, stdoutToServer=True, stderrToServer=True)
+except ImportError:
+    sys.stderr.write("Error: " + "You must add org.python.pydev.debug.pysrc to your PYTHONPATH.")
+    sys.exit(1)
+except :
+    pass
+
 
 username = addon.getSetting('username')
 password = addon.getSetting('password')
@@ -111,8 +129,8 @@ gdrive = gdrive.gdrive(username, password, auth_writely, auth_wise, user_agent, 
 #   auth_token will permit "quicker" login in future executions by reusing the existing login session (less HTTPS calls = quicker video transitions between clips)
 if auth_writely == '' and save_auth_token == 'true':
     addon.setSetting('auth_writely', gdrive.writely)
-    addon.setSetting('auth_wise', gdrive.wise)    
-    
+    addon.setSetting('auth_wise', gdrive.wise)
+
 
 log('plugin google authorization: ' + gdrive.returnHeaders())
 log('plugin url: ' + plugin_url)
@@ -139,11 +157,10 @@ if mode == 'main':
 #play a URL that is passed in (presumely requires authorizated session)
 elif mode == 'play':
     url = plugin_queries['url']
-    log('play url: ' + url)
 
     item = xbmcgui.ListItem(path=url)
     log('play url: ' + url)
-    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item) 
+    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 #play a video given its exact-title
 elif mode == 'playvideo' or mode == 'playVideo':
@@ -164,7 +181,7 @@ elif mode == 'playvideo' or mode == 'playVideo':
 
     item = xbmcgui.ListItem(path=videoURL)
     log('play url: ' + videoURL)
-    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item) 
+    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 #force memory-cache - play a video given its exact-title
 elif mode == 'memoryCachevideo' or mode == 'memoryCacheVideo':
@@ -180,7 +197,7 @@ elif mode == 'memoryCachevideo' or mode == 'memoryCacheVideo':
 
     item = xbmcgui.ListItem(path=videoURL)
     log('play url: ' + videoURL)
-    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item) 
+    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 
 #force stream - play a video given its exact-title
@@ -188,10 +205,9 @@ elif mode == 'streamVideo':
     title = plugin_queries['title']
     log('play title: ' + title)
     videoURL = gdrive.getVideoPlayerLink(title)
-    log('play videoURL: ' + videoURL)
     item = xbmcgui.ListItem(path=videoURL)
     log('play url: ' + videoURL)
-    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item) 
+    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 elif mode == 'streamurl' or mode == 'streamURL':
     url = plugin_queries['url']
@@ -199,13 +215,13 @@ elif mode == 'streamurl' or mode == 'streamURL':
     videoURL = gdrive.getPlayerLinkURL(url)
     item = xbmcgui.ListItem(path=videoURL)
     log('play url: ' + videoURL)
-    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item) 
+    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 
 #clear the authorization token
 elif mode == 'clearauth':
     addon.setSetting('auth_writely', '')
     addon.setSetting('auth_wise', '')
-     
+
 xbmcplugin.endOfDirectory(plugin_handle)
 
