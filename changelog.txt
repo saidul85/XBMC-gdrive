@@ -1,3 +1,6 @@
+- remove explicit UTF-8 calls [Error on load public url #2]
+- add remote-debugger code
+- cleanup of logging statements
 - don't login or provide authorization token for public videos (unless denied access)
 - add thumbnail previews
 Version 0.2.7

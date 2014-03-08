@@ -27,9 +27,9 @@ import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 
 def log(msg, err=False):
     if err:
-        xbmc.log(addon.getAddonInfo('name') + ': ' + msg.encode('utf-8'), xbmc.LOGERROR)
+        xbmc.log(addon.getAddonInfo('name') + ': ' + msg, xbmc.LOGERROR)
     else:
-        xbmc.log(addon.getAddonInfo('name') + ': ' + msg.encode('utf-8'), xbmc.LOGDEBUG)
+        xbmc.log(addon.getAddonInfo('name') + ': ' + msg, xbmc.LOGDEBUG)
 
 def parse_query(query):
     queries = cgi.parse_qs(query)
@@ -42,7 +42,7 @@ def parse_query(query):
 def addVideo(url, infolabels, img='', fanart='', total_items=0,
                    cm=[], cm_replace=False):
     infolabels = decode_dict(infolabels)
-    log('adding video: %s - %s' % (infolabels['title'].decode('utf-8','ignore'), url))
+    log('adding video: %s - %s' % (infolabels['title'], url))
     listitem = xbmcgui.ListItem(infolabels['title'], iconImage=img,
                                 thumbnailImage=img)
     listitem.setInfo('video', infolabels)
