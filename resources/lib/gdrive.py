@@ -271,14 +271,14 @@ class gdrive:
                              response_data, re.DOTALL):
                 title,url,thumbnail = r.groups()
                 log('found video %s %s' % (title, url))
-                videos[title] = {'url': 'plugin://plugin.video.gdrive?mode=streamVideo&title=' + title, 'thumbnail' : thumbnail}
+                videos[title] = {'url': 'plugin://plugin.video.gdrive/?mode=streamVideo&title=' + title, 'thumbnail' : thumbnail}
 
 
             #for playing video.google.com videos linked to your google drive account
             for r in re.finditer('<title>([^<]+)</title><link rel=\'alternate\' type=\'text/html\' href=\'([^\']+).+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
                              response_data, re.DOTALL):
                 title,url,thumbnail = r.groups()
-                videos[title] = {'url': 'plugin://plugin.video.gdrive?mode=streamVideo&title=' + title, 'thumbnail' : thumbnail}
+                videos[title] = {'url': 'plugin://plugin.video.gdrive/?mode=streamVideo&title=' + title, 'thumbnail' : thumbnail}
 
 
             nextURL = ''
@@ -438,7 +438,7 @@ class gdrive:
               response = urllib2.urlopen(req)
           except urllib2.URLError, e:
               if e.code == 403 or e.code == 401:
-#                self.login()
+                self.login()
                 header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.writely, 'GData-Version' : '3.0' }
                 req = urllib2.Request(url, None, header)
                 try:
@@ -539,7 +539,7 @@ class gdrive:
               response = urllib2.urlopen(req)
           except urllib2.URLError, e:
               if e.code == 403 or e.code == 401:
-#                self.login()
+                self.login()
                 header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.writely, 'GData-Version' : '3.0' }
                 req = urllib2.Request(url, None, header)
                 try:
@@ -585,7 +585,7 @@ class gdrive:
               response = urllib2.urlopen(req)
           except urllib2.URLError, e:
               if e.code == 403 or e.code == 401:
-#                self.login()
+                self.loginWISE()
                 header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.wise, 'GData-Version' : '3.0' }
                 req = urllib2.Request(url, None, header)
                 try:
